@@ -1,49 +1,66 @@
-# Time Tracker
+# Persidera Time Tracker
 
-A simple time tracking application made as a part of "Programming for Windows"
-course on University of Finance and Administration,
-department of Informatics and Mathematics.
-Written in C# / .NET 4 and using the WinForms library,
-released publicly as open-source software under MIT license.
-
+A WinForms desktop time tracker for Windows, used internally at
+**Persidera Industries LLC**. It is a fork of
+[Amunak/TimeTracker](https://github.com/Amunak/TimeTracker) by
+Jiří "Amunak" Barouš (MIT license), upgraded to **.NET 8** and extended
+with billing periods and **Mercury invoicing** integration.
 
 ## Features
 
-* Time tracking
-* Visual display of currently tracked time
-* Set tracking categories (or pick a category that's already in the table)
-* Observe immediate totals (statistics for all rows / selection / selected category)
-* Delete inconvenient entries
-* Open / Save time tracker table files (which use CSV-like format that is easy to process further)
+* Start/stop time tracking with a live elapsed-time display
+* Set tracking categories (or pick one already in the table)
+* Immediate totals (all rows / selection / selected category)
+* Delete entries
+* Open / Save time tracker table files (CSV-like `.timetracker` format — fully
+  compatible with the original app)
 * Generic window manager options (stay on top, show in notification area, ...)
-* Language picker (currently available in Czech and English) with Windows' locale autodetection.
-* Settings are persisted in local storage
+* Language picker (Czech and English) with Windows locale autodetection
+* **Configurable hourly rate** (default `$35/hr`)
+* **Semi-monthly billing periods** that land on the 1st and 15th of each month
+  (configurable), automatically shifted to the nearest weekday when those days
+  fall on a weekend
+* **Mercury invoicing**: create an accounts-receivable invoice in Mercury
+  directly from the time tracked in the current billing period
+* The Mercury API token is stored securely in **Windows Credential Manager**
+  (never in plaintext settings)
+* A status-bar readout of the current period, hours tracked and billable value
 
+## Mercury invoicing
 
-## Usage
+1. Open **Tools → Settings** and configure:
+   * Hourly rate and billing days
+   * Mercury Customer ID and Destination Account ID
+   * Mercury API token (saved to Windows Credential Manager via the **Save Token** button)
+2. Track some time.
+3. Open **Tools → Create Invoice for Current Period**. The app calculates the
+   current billing period, filters entries to it, and shows a confirmation
+   dialog (`{hours}h @ ${rate}/hr = ${total}`).
+4. On confirm, it calls the Mercury API to create the invoice.
 
-1. Star tracking by clicking the ![Start Tracking](/screenshots/btn_start_tracking.png?raw=true) button
-2. The two read-only fields now show the time when tracking started and how much time elapsed since then: ![Two fields with absolute time and elapsed time](/screenshots/tracking_info.png?raw=true)
-3. Optionally fill in the "category" field: ![A text field with "Awesome Cat" filled in](/screenshots/category_field.png?raw=true)
-4. Stop the tracking by clicking the ![Stop Tracking](/screenshots/btn_stop_tracking.png?raw=true) button
-5. A new record will appear in the table below: ![Example Time Tracker record](/screenshots/example_record.png?raw=true)
+Notes:
 
+* Mercury invoicing requires an eligible subscription tier and a token with
+  invoicing permissions. If the API returns **403 Forbidden**, the app fails
+  gracefully with a clear message.
+* The app runs fine with no Mercury configuration — the invoice command simply
+  reports that it is "not configured".
 
-## Screenshots
+## Building
 
-The following screenshot represents the table from [examples/table.timetracker](/examples/table.timetracker):
+Requires the .NET SDK (targets `net8.0-windows`).
 
-![Example TimeTracker table displayed in the program's GUI](/screenshots/example_table.png?raw=true)
+```
+dotnet build PersideraTimeTracker.sln -c Release
+```
 
+The executable is produced at
+`PersideraTimeTracker/bin/Release/net8.0-windows/PersideraTimeTracker.exe`.
 
-## Installation
+## Credits & license
 
-You can either grab the [latest release](https://github.com/Amunak/TimeTracker/releases/latest), unpack it and run `timetracker.exe` or compile the software yourself.
-
-### Compiling
-
-Clone this repository, open the solution (`TimeTracker.sln`) in Visual Studio,
-pick a configuration (I'd suggest `release` unless you plan to tinker with the code)
-and select `Build > Compile Solution`. The built code should appear in the project directory
-under `bin/Release`. You'll see `timetracker.exe` here
-(along with some generated resource files and default config).
+Released under the MIT License. Original work
+Copyright © 2017 Jiří "Amunak" Barouš
+([Amunak/TimeTracker](https://github.com/Amunak/TimeTracker)).
+Fork and Mercury invoicing additions Copyright © 2026
+Persidera Industries LLC.
