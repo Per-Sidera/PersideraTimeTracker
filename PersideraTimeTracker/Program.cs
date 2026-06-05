@@ -28,6 +28,18 @@ namespace PersideraTimeTracker
 
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+
+            // .NET dark-mode hint: paints native chrome (title bar, scrollbars,
+            // menu rendering) dark to match the Persidera brand theme.
+            try
+            {
+                System.Windows.Forms.Application.SetColorMode(System.Windows.Forms.SystemColorMode.Dark);
+            }
+            catch
+            {
+                // SetColorMode is best-effort; ignore if unsupported at runtime.
+            }
+
             System.Windows.Forms.Application.Run(new PersideraTimeTracker.Form.Application());
         }
     }

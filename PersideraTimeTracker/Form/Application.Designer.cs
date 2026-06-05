@@ -1,4 +1,7 @@
-﻿namespace PersideraTimeTracker.Form
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace PersideraTimeTracker.Form
 {
     partial class Application
     {
@@ -10,7 +13,6 @@
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,541 +22,518 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Controls referenced by Application.cs
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
+        // Menu
+        private MenuStrip mainMenuStrip;
+        private ToolStripMenuItem fileToolStripMenuItem1;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem saveAsToolStripMenuItem;
+        private ToolStripMenuItem closeToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem1;
+        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ToolStripMenuItem languageToolStripMenuItem;
+        private ToolStripMenuItem alwaysOnTopToolStripMenuItem;
+        private ToolStripMenuItem showInTaskbarToolStripMenuItem;
+        private ToolStripMenuItem showInNotificationAreaToolStripMenuItem;
+        private ToolStripMenuItem toolsToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem createInvoiceToolStripMenuItem;
+        private ToolStripMenuItem viewPeriodToolStripMenuItem;
+        private ToolStripMenuItem helpToolStripMenuItem1;
+        private ToolStripMenuItem aboutToolStripMenuItem1;
+
+        // Timer panel
+        private Panel timerPanel;
+        private Label timerLabel;
+        private Button trackButton;
+
+        // Category row
+        private ComboBox categoryComboBox;
+        private Button addCategoryButton;
+
+        // Grid
+        private DataGridView dataGridViewMain;
+        private DataGridViewTextBoxColumn DateStart;
+        private DataGridViewTextBoxColumn EndDate;
+        private DataGridViewTextBoxColumn TimeSpan;
+        private DataGridViewTextBoxColumn CategoryName;
+        private ContextMenuStrip gridContextMenu;
+        private ToolStripMenuItem editEntryContextMenuItem;
+        private ToolStripMenuItem deleteEntryContextMenuItem;
+
+        // Status bar
+        private Panel statusBar;
+        private Label billingPeriodText;
+        private Label statsTotalText;
+        private Label statsValueText;
+        private Label statsSelectedText;
+        private Label statsCategoryText;
+        private Button toolsButton;
+        private Button createInvoiceButton;
+
+        private NotifyIcon notifyIcon;
+
+        #endregion
+
+        #region Code-first themed layout
+
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Application));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.dataGridViewMain = new System.Windows.Forms.DataGridView();
-            this.DateStart = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.EndDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TimeSpan = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CategoryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.statsTotalText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.statsSelectedText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.statsCategoryText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.billingPeriodText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.languageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showInTaskbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showInNotificationAreaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createInvoiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMain = new System.Windows.Forms.ToolStrip();
-            this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.addToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.deleteToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.startTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.stopTrackingToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.trackingStartTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.trackingElapsedTimeToolStripTextBox = new System.Windows.Forms.ToolStripTextBox();
-            this.categoryToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.toolStripContainer1.ContentPanel.SuspendLayout();
-            this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
-            this.toolStripContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).BeginInit();
-            this.statusStrip.SuspendLayout();
-            this.mainMenuStrip.SuspendLayout();
-            this.toolStripMain.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // toolStripContainer1
-            // 
-            this.toolStripContainer1.BottomToolStripPanelVisible = false;
-            // 
-            // toolStripContainer1.ContentPanel
-            // 
-            resources.ApplyResources(this.toolStripContainer1.ContentPanel, "toolStripContainer1.ContentPanel");
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.dataGridViewMain);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.statusStrip);
-            resources.ApplyResources(this.toolStripContainer1, "toolStripContainer1");
-            this.toolStripContainer1.LeftToolStripPanelVisible = false;
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.RightToolStripPanelVisible = false;
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.mainMenuStrip);
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStripMain);
-            // 
-            // dataGridViewMain
-            // 
-            this.dataGridViewMain.AllowUserToAddRows = false;
-            this.dataGridViewMain.AllowUserToDeleteRows = false;
-            this.dataGridViewMain.AllowUserToOrderColumns = true;
-            this.dataGridViewMain.AllowUserToResizeRows = false;
-            this.dataGridViewMain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridViewMain.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridViewMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewMain.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dataGridViewMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewMain.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.DateStart,
-            this.EndDate,
-            this.TimeSpan,
-            this.CategoryName});
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewMain.DefaultCellStyle = dataGridViewCellStyle4;
-            resources.ApplyResources(this.dataGridViewMain, "dataGridViewMain");
-            this.dataGridViewMain.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridViewMain.Name = "dataGridViewMain";
-            this.dataGridViewMain.ReadOnly = true;
-            this.dataGridViewMain.RowHeadersVisible = false;
-            this.dataGridViewMain.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewMain.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewMain.SelectionChanged += new System.EventHandler(this.dataGridViewMain_SelectionChanged);
-            this.dataGridViewMain.Paint += new System.Windows.Forms.PaintEventHandler(this.dataGridViewMain_Paint);
-            this.dataGridViewMain.Resize += new System.EventHandler(this.dataGridViewMain_Resize);
-            // 
-            // DateStart
-            // 
-            this.DateStart.DataPropertyName = "StartTime";
-            dataGridViewCellStyle2.Format = "yyyy-MM-dd HH:mm:ss";
-            this.DateStart.DefaultCellStyle = dataGridViewCellStyle2;
-            resources.ApplyResources(this.DateStart, "DateStart");
-            this.DateStart.Name = "DateStart";
-            this.DateStart.ReadOnly = true;
-            // 
-            // EndDate
-            // 
-            this.EndDate.DataPropertyName = "EndTime";
-            dataGridViewCellStyle3.Format = "yyyy-MM-dd HH:mm:ss";
-            this.EndDate.DefaultCellStyle = dataGridViewCellStyle3;
-            resources.ApplyResources(this.EndDate, "EndDate");
-            this.EndDate.Name = "EndDate";
-            this.EndDate.ReadOnly = true;
-            // 
-            // TimeSpan
-            // 
-            this.TimeSpan.DataPropertyName = "TimeElapsed";
-            resources.ApplyResources(this.TimeSpan, "TimeSpan");
-            this.TimeSpan.Name = "TimeSpan";
-            this.TimeSpan.ReadOnly = true;
-            // 
-            // CategoryName
-            // 
-            this.CategoryName.DataPropertyName = "Category";
-            resources.ApplyResources(this.CategoryName, "CategoryName");
-            this.CategoryName.Name = "CategoryName";
-            this.CategoryName.ReadOnly = true;
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statsTotalText,
-            this.statsSelectedText,
-            this.statsCategoryText,
-            this.billingPeriodText});
-            resources.ApplyResources(this.statusStrip, "statusStrip");
-            this.statusStrip.Name = "statusStrip";
-            // 
-            // statsTotalText
-            // 
-            this.statsTotalText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.statsTotalText.Name = "statsTotalText";
-            resources.ApplyResources(this.statsTotalText, "statsTotalText");
-            // 
-            // statsSelectedText
-            // 
-            this.statsSelectedText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.statsSelectedText.Name = "statsSelectedText";
-            resources.ApplyResources(this.statsSelectedText, "statsSelectedText");
-            // 
-            // statsCategoryText
-            // 
-            this.statsCategoryText.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.statsCategoryText.Name = "statsCategoryText";
-            resources.ApplyResources(this.statsCategoryText, "statsCategoryText");
-            //
-            // billingPeriodText
-            //
-            this.billingPeriodText.Name = "billingPeriodText";
-            this.billingPeriodText.Spring = true;
-            this.billingPeriodText.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
-            // mainMenuStrip
-            //
-            resources.ApplyResources(this.mainMenuStrip, "mainMenuStrip");
-            this.mainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem1,
-            this.optionsToolStripMenuItem,
-            this.toolsToolStripMenuItem,
-            this.helpToolStripMenuItem1});
-            this.mainMenuStrip.Name = "mainMenuStrip";
-            this.mainMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            // 
-            // fileToolStripMenuItem1
-            // 
-            this.fileToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.openToolStripMenuItem,
-            this.toolStripSeparator2,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.closeToolStripMenuItem,
-            this.toolStripSeparator4,
-            this.exitToolStripMenuItem1});
-            this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
-            resources.ApplyResources(this.fileToolStripMenuItem1, "fileToolStripMenuItem1");
-            // 
-            // newToolStripMenuItem
-            // 
-            resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
-            // 
-            // openToolStripMenuItem
-            // 
-            resources.ApplyResources(this.openToolStripMenuItem, "openToolStripMenuItem");
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
-            // 
-            // saveToolStripMenuItem
-            // 
-            resources.ApplyResources(this.saveToolStripMenuItem, "saveToolStripMenuItem");
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // saveAsToolStripMenuItem
-            // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            resources.ApplyResources(this.saveAsToolStripMenuItem, "saveAsToolStripMenuItem");
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            resources.ApplyResources(this.closeToolStripMenuItem, "closeToolStripMenuItem");
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
-            // 
-            // exitToolStripMenuItem1
-            // 
-            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            resources.ApplyResources(this.exitToolStripMenuItem1, "exitToolStripMenuItem1");
-            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.languageToolStripMenuItem,
-            this.toolStripSeparator3,
-            this.alwaysOnTopToolStripMenuItem,
-            this.showInTaskbarToolStripMenuItem,
-            this.showInNotificationAreaToolStripMenuItem});
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            resources.ApplyResources(this.optionsToolStripMenuItem, "optionsToolStripMenuItem");
-            // 
-            // languageToolStripMenuItem
-            // 
-            this.languageToolStripMenuItem.Name = "languageToolStripMenuItem";
-            resources.ApplyResources(this.languageToolStripMenuItem, "languageToolStripMenuItem");
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
-            // 
-            // alwaysOnTopToolStripMenuItem
-            // 
-            this.alwaysOnTopToolStripMenuItem.CheckOnClick = true;
-            this.alwaysOnTopToolStripMenuItem.Name = "alwaysOnTopToolStripMenuItem";
-            resources.ApplyResources(this.alwaysOnTopToolStripMenuItem, "alwaysOnTopToolStripMenuItem");
-            this.alwaysOnTopToolStripMenuItem.CheckedChanged += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_CheckedChanged);
-            // 
-            // showInTaskbarToolStripMenuItem
-            // 
-            this.showInTaskbarToolStripMenuItem.Checked = true;
-            this.showInTaskbarToolStripMenuItem.CheckOnClick = true;
-            this.showInTaskbarToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.showInTaskbarToolStripMenuItem.Name = "showInTaskbarToolStripMenuItem";
-            resources.ApplyResources(this.showInTaskbarToolStripMenuItem, "showInTaskbarToolStripMenuItem");
-            this.showInTaskbarToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showInTaskbarToolStripMenuItem_CheckedChanged);
-            // 
-            // showInNotificationAreaToolStripMenuItem
-            // 
-            this.showInNotificationAreaToolStripMenuItem.CheckOnClick = true;
-            this.showInNotificationAreaToolStripMenuItem.Name = "showInNotificationAreaToolStripMenuItem";
-            resources.ApplyResources(this.showInNotificationAreaToolStripMenuItem, "showInNotificationAreaToolStripMenuItem");
-            this.showInNotificationAreaToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showInNotificationAreaToolStripMenuItem_CheckedChanged);
-            //
-            // toolsToolStripMenuItem
-            //
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.settingsToolStripMenuItem,
-            this.createInvoiceToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Text = "&Tools";
-            //
-            // settingsToolStripMenuItem
-            //
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Text = "&Settings...";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-            //
-            // createInvoiceToolStripMenuItem
-            //
-            this.createInvoiceToolStripMenuItem.Name = "createInvoiceToolStripMenuItem";
-            this.createInvoiceToolStripMenuItem.Text = "Create &Invoice for Current Period...";
-            this.createInvoiceToolStripMenuItem.Click += new System.EventHandler(this.createInvoiceToolStripMenuItem_Click);
-            //
-            // helpToolStripMenuItem1
-            //
-            this.helpToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem1});
-            this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            resources.ApplyResources(this.helpToolStripMenuItem1, "helpToolStripMenuItem1");
-            // 
-            // aboutToolStripMenuItem1
-            // 
-            this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            resources.ApplyResources(this.aboutToolStripMenuItem1, "aboutToolStripMenuItem1");
-            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
-            // 
-            // toolStripMain
-            // 
-            this.toolStripMain.CanOverflow = false;
-            resources.ApplyResources(this.toolStripMain, "toolStripMain");
-            this.toolStripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripButton,
-            this.openToolStripButton,
-            this.saveToolStripButton,
-            this.toolStripSeparator,
-            this.addToolStripButton,
-            this.deleteToolStripButton,
-            this.copyToolStripButton,
-            this.toolStripSeparator1,
-            this.startTrackingToolStripButton,
-            this.stopTrackingToolStripButton,
-            this.trackingStartTimeToolStripTextBox,
-            this.trackingElapsedTimeToolStripTextBox,
-            this.categoryToolStripComboBox});
-            this.toolStripMain.Name = "toolStripMain";
-            this.toolStripMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            // 
-            // newToolStripButton
-            // 
-            this.newToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.newToolStripButton, "newToolStripButton");
-            this.newToolStripButton.Name = "newToolStripButton";
-            this.newToolStripButton.Click += new System.EventHandler(this.newToolStripButton_Click);
-            // 
-            // openToolStripButton
-            // 
-            this.openToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.openToolStripButton, "openToolStripButton");
-            this.openToolStripButton.Name = "openToolStripButton";
-            this.openToolStripButton.Click += new System.EventHandler(this.openToolStripButton_Click);
-            // 
-            // saveToolStripButton
-            // 
-            this.saveToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.saveToolStripButton, "saveToolStripButton");
-            this.saveToolStripButton.Name = "saveToolStripButton";
-            this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripButton_Click);
-            // 
-            // toolStripSeparator
-            // 
-            this.toolStripSeparator.Name = "toolStripSeparator";
-            resources.ApplyResources(this.toolStripSeparator, "toolStripSeparator");
-            // 
-            // addToolStripButton
-            // 
-            resources.ApplyResources(this.addToolStripButton, "addToolStripButton");
-            this.addToolStripButton.Name = "addToolStripButton";
-            // 
-            // deleteToolStripButton
-            // 
-            resources.ApplyResources(this.deleteToolStripButton, "deleteToolStripButton");
-            this.deleteToolStripButton.Name = "deleteToolStripButton";
-            this.deleteToolStripButton.Click += new System.EventHandler(this.deleteToolStripButton_Click);
-            // 
-            // copyToolStripButton
-            // 
-            resources.ApplyResources(this.copyToolStripButton, "copyToolStripButton");
-            this.copyToolStripButton.Name = "copyToolStripButton";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
-            // 
-            // startTrackingToolStripButton
-            // 
-            resources.ApplyResources(this.startTrackingToolStripButton, "startTrackingToolStripButton");
-            this.startTrackingToolStripButton.Name = "startTrackingToolStripButton";
-            this.startTrackingToolStripButton.Click += new System.EventHandler(this.startTrackingToolStripButton_Click);
-            // 
-            // stopTrackingToolStripButton
-            // 
-            this.stopTrackingToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            resources.ApplyResources(this.stopTrackingToolStripButton, "stopTrackingToolStripButton");
-            this.stopTrackingToolStripButton.Name = "stopTrackingToolStripButton";
-            this.stopTrackingToolStripButton.Click += new System.EventHandler(this.stopTrackingToolStripButton_Click);
-            // 
-            // trackingStartTimeToolStripTextBox
-            // 
-            resources.ApplyResources(this.trackingStartTimeToolStripTextBox, "trackingStartTimeToolStripTextBox");
-            this.trackingStartTimeToolStripTextBox.Name = "trackingStartTimeToolStripTextBox";
-            this.trackingStartTimeToolStripTextBox.ReadOnly = true;
-            // 
-            // trackingElapsedTimeToolStripTextBox
-            // 
-            resources.ApplyResources(this.trackingElapsedTimeToolStripTextBox, "trackingElapsedTimeToolStripTextBox");
-            this.trackingElapsedTimeToolStripTextBox.Name = "trackingElapsedTimeToolStripTextBox";
-            this.trackingElapsedTimeToolStripTextBox.ReadOnly = true;
-            // 
-            // categoryToolStripComboBox
-            // 
-            this.categoryToolStripComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.categoryToolStripComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.categoryToolStripComboBox.Name = "categoryToolStripComboBox";
-            resources.ApplyResources(this.categoryToolStripComboBox, "categoryToolStripComboBox");
-            this.categoryToolStripComboBox.Sorted = true;
-            this.categoryToolStripComboBox.TextUpdate += new System.EventHandler(this.categoryToolStripComboBox_TextUpdate);
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.DataPropertyName = "Category";
-            resources.ApplyResources(this.dataGridViewTextBoxColumn1, "dataGridViewTextBoxColumn1");
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
-            // 
-            // notifyIcon
-            // 
-            resources.ApplyResources(this.notifyIcon, "notifyIcon");
-            this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
-            // 
-            // Application
-            // 
-            resources.ApplyResources(this, "$this");
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.toolStripContainer1);
-            this.MainMenuStrip = this.mainMenuStrip;
-            this.Name = "Application";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Application_FormClosing);
-            this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-            this.toolStripContainer1.ContentPanel.PerformLayout();
-            this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
-            this.toolStripContainer1.ResumeLayout(false);
-            this.toolStripContainer1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewMain)).EndInit();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
-            this.mainMenuStrip.ResumeLayout(false);
-            this.mainMenuStrip.PerformLayout();
-            this.toolStripMain.ResumeLayout(false);
-            this.toolStripMain.PerformLayout();
-            this.ResumeLayout(false);
 
+            // ----- Form -----
+            this.SuspendLayout();
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.ClientSize = new Size(680, 560);
+            this.MinimumSize = new Size(560, 480);
+            this.Text = "PERSIDERA TIME TRACKER";
+            this.BackColor = Theme.Ink;
+            this.ForeColor = Theme.Bone;
+            this.Font = Theme.FontBase;
+            this.Padding = new Padding(14, 0, 14, 0);
+
+            BuildMenu();
+            BuildTimerPanel();
+            BuildCategoryRow();
+            BuildGrid();
+            BuildStatusBar();
+
+            // notify icon
+            this.notifyIcon = new NotifyIcon(this.components);
+            this.notifyIcon.Text = "Persidera Time Tracker";
+            this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
+
+            // Add in reverse z-order: docked controls fill remaining space last-added-first.
+            this.Controls.Add(this.dataGridViewMain);     // Fill
+            this.Controls.Add(this.categoryRow);          // Top (below timer)
+            this.Controls.Add(this.timerPanel);           // Top
+            this.Controls.Add(this.menuSpacer);           // Top (gap under menu)
+            this.Controls.Add(this.statusBar);            // Bottom
+            this.Controls.Add(this.mainMenuStrip);        // Top-most menu
+
+            this.MainMenuStrip = this.mainMenuStrip;
+            this.FormClosing += new FormClosingEventHandler(this.Application_FormClosing);
+
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        // Holds the category combo + add button so it can dock as one strip.
+        private Panel categoryRow;
+        // Small spacer so content isn't flush against the menu bar.
+        private Panel menuSpacer;
+
+        private void BuildMenu()
+        {
+            this.mainMenuStrip = new MenuStrip
+            {
+                BackColor = Theme.InkElev,
+                ForeColor = Theme.Bone,
+                Renderer = new DarkMenuRenderer(),
+                Padding = new Padding(6, 2, 0, 2),
+            };
+
+            // File
+            this.fileToolStripMenuItem1 = NewMenu("&File");
+            this.newToolStripMenuItem = NewMenu("&New");
+            this.openToolStripMenuItem = NewMenu("&Open...");
+            this.saveToolStripMenuItem = NewMenu("&Save");
+            this.saveAsToolStripMenuItem = NewMenu("Save &As...");
+            this.closeToolStripMenuItem = NewMenu("&Close");
+            this.exitToolStripMenuItem1 = NewMenu("E&xit");
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
+            this.fileToolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] {
+                this.newToolStripMenuItem,
+                this.openToolStripMenuItem,
+                new ToolStripSeparator(),
+                this.saveToolStripMenuItem,
+                this.saveAsToolStripMenuItem,
+                this.closeToolStripMenuItem,
+                new ToolStripSeparator(),
+                this.exitToolStripMenuItem1,
+            });
+
+            // Options
+            this.optionsToolStripMenuItem = NewMenu("&Options");
+            this.languageToolStripMenuItem = NewMenu("&Language");
+            this.alwaysOnTopToolStripMenuItem = NewMenu("Always on &Top");
+            this.showInTaskbarToolStripMenuItem = NewMenu("Show in &Taskbar");
+            this.showInNotificationAreaToolStripMenuItem = NewMenu("Show in &Notification Area");
+            this.alwaysOnTopToolStripMenuItem.CheckOnClick = true;
+            this.showInTaskbarToolStripMenuItem.CheckOnClick = true;
+            this.showInTaskbarToolStripMenuItem.Checked = true;
+            this.showInNotificationAreaToolStripMenuItem.CheckOnClick = true;
+            this.alwaysOnTopToolStripMenuItem.CheckedChanged += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_CheckedChanged);
+            this.showInTaskbarToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showInTaskbarToolStripMenuItem_CheckedChanged);
+            this.showInNotificationAreaToolStripMenuItem.CheckedChanged += new System.EventHandler(this.showInNotificationAreaToolStripMenuItem_CheckedChanged);
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+                this.languageToolStripMenuItem,
+                new ToolStripSeparator(),
+                this.alwaysOnTopToolStripMenuItem,
+                this.showInTaskbarToolStripMenuItem,
+                this.showInNotificationAreaToolStripMenuItem,
+            });
+
+            // Tools
+            this.toolsToolStripMenuItem = NewMenu("&Tools");
+            this.settingsToolStripMenuItem = NewMenu("&Settings...");
+            this.createInvoiceToolStripMenuItem = NewMenu("Create &Invoice for Current Period...");
+            this.viewPeriodToolStripMenuItem = NewMenu("&View Current Period Entries");
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            this.createInvoiceToolStripMenuItem.Click += new System.EventHandler(this.createInvoiceToolStripMenuItem_Click);
+            this.viewPeriodToolStripMenuItem.Click += new System.EventHandler(this.viewPeriodToolStripMenuItem_Click);
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
+                this.settingsToolStripMenuItem,
+                new ToolStripSeparator(),
+                this.viewPeriodToolStripMenuItem,
+                this.createInvoiceToolStripMenuItem,
+            });
+
+            // Help
+            this.helpToolStripMenuItem1 = NewMenu("&Help");
+            this.aboutToolStripMenuItem1 = NewMenu("&About");
+            this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
+            this.helpToolStripMenuItem1.DropDownItems.Add(this.aboutToolStripMenuItem1);
+
+            this.mainMenuStrip.Items.AddRange(new ToolStripItem[] {
+                this.fileToolStripMenuItem1,
+                this.optionsToolStripMenuItem,
+                this.toolsToolStripMenuItem,
+                this.helpToolStripMenuItem1,
+            });
+
+            this.menuSpacer = new Panel { Dock = DockStyle.Top, Height = 12, BackColor = Theme.Ink };
+        }
+
+        private static ToolStripMenuItem NewMenu(string text)
+        {
+            return new ToolStripMenuItem(text)
+            {
+                ForeColor = Theme.Bone,
+                BackColor = Theme.InkElev,
+            };
+        }
+
+        private void BuildTimerPanel()
+        {
+            this.timerPanel = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 150,
+                BackColor = Theme.InkElev,
+                Padding = new Padding(0, 14, 0, 14),
+            };
+            this.timerPanel.Paint += PanelBorderPaint;
+
+            this.timerLabel = new Label
+            {
+                Text = "00:00:00",
+                Font = Theme.FontTimer,
+                ForeColor = Theme.BoneMute,
+                AutoSize = false,
+                Dock = DockStyle.Top,
+                Height = 60,
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Theme.InkElev,
+            };
+
+            this.trackButton = new Button
+            {
+                Text = "▶  START TRACKING",
+                Font = Theme.FontMed,
+                Size = new Size(220, 44),
+                BackColor = Theme.Ember,
+                ForeColor = Theme.Bone,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
+                Anchor = AnchorStyles.None,
+            };
+            this.trackButton.FlatAppearance.BorderSize = 0;
+            this.trackButton.FlatAppearance.MouseOverBackColor = Theme.EmberHover;
+            this.trackButton.Click += new System.EventHandler(this.trackButton_Click);
+
+            // Center the button horizontally inside a docked holder.
+            var btnHolder = new Panel { Dock = DockStyle.Fill, BackColor = Theme.InkElev };
+            btnHolder.Controls.Add(this.trackButton);
+            btnHolder.Resize += (s, e) =>
+            {
+                this.trackButton.Left = (btnHolder.Width - this.trackButton.Width) / 2;
+                this.trackButton.Top = (btnHolder.Height - this.trackButton.Height) / 2;
+            };
+
+            this.timerPanel.Controls.Add(btnHolder);
+            this.timerPanel.Controls.Add(this.timerLabel);
+        }
+
+        private void BuildCategoryRow()
+        {
+            this.categoryRow = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 56,
+                BackColor = Theme.Ink,
+                Padding = new Padding(0, 12, 0, 8),
+            };
+
+            var lbl = new Label
+            {
+                Text = "Category",
+                ForeColor = Theme.BoneMute,
+                Font = Theme.FontSmall,
+                AutoSize = true,
+                Location = new Point(2, 0),
+            };
+
+            this.categoryComboBox = new ComboBox
+            {
+                BackColor = Theme.InkElev,
+                ForeColor = Theme.Bone,
+                FlatStyle = FlatStyle.Flat,
+                Font = Theme.FontBase,
+                Location = new Point(2, 18),
+                Width = 360,
+                AutoCompleteMode = AutoCompleteMode.SuggestAppend,
+                AutoCompleteSource = AutoCompleteSource.ListItems,
+                Sorted = true,
+            };
+            this.categoryComboBox.TextUpdate += new System.EventHandler(this.categoryComboBox_TextUpdate);
+
+            this.addCategoryButton = MakeFlatButton("+  Add", 80);
+            this.addCategoryButton.Location = new Point(370, 16);
+            this.addCategoryButton.Click += new System.EventHandler(this.addCategoryButton_Click);
+
+            this.categoryRow.Controls.Add(lbl);
+            this.categoryRow.Controls.Add(this.categoryComboBox);
+            this.categoryRow.Controls.Add(this.addCategoryButton);
+        }
+
+        private void BuildGrid()
+        {
+            this.dataGridViewMain = new DataGridView
+            {
+                Dock = DockStyle.Fill,
+                BackgroundColor = Theme.Ink,
+                GridColor = Theme.InkLine,
+                BorderStyle = BorderStyle.None,
+                EnableHeadersVisualStyles = false,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                AllowUserToResizeRows = false,
+                AllowUserToOrderColumns = true,
+                RowHeadersVisible = false,
+                ReadOnly = true,
+                EditMode = DataGridViewEditMode.EditProgrammatically,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+                ColumnHeadersHeight = 34,
+                RowTemplate = { Height = 28 },
+            };
+
+            this.dataGridViewMain.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Theme.InkElev,
+                ForeColor = Theme.Bone,
+                SelectionBackColor = Theme.InkLine,
+                SelectionForeColor = Theme.Star,
+                Font = Theme.FontBase,
+                Padding = new Padding(6, 0, 6, 0),
+            };
+            this.dataGridViewMain.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Theme.Ink,
+                ForeColor = Theme.Bone,
+                SelectionBackColor = Theme.InkLine,
+                SelectionForeColor = Theme.Star,
+            };
+            this.dataGridViewMain.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Theme.InkLine,
+                ForeColor = Theme.BoneMute,
+                SelectionBackColor = Theme.InkLine,
+                SelectionForeColor = Theme.BoneMute,
+                Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+                Alignment = DataGridViewContentAlignment.MiddleLeft,
+                Padding = new Padding(6, 0, 6, 0),
+            };
+
+            this.DateStart = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "StartTime",
+                HeaderText = "DATE / START",
+                Name = "DateStart",
+                ReadOnly = true,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "yyyy-MM-dd  HH:mm" },
+            };
+            this.EndDate = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "EndTime",
+                HeaderText = "END",
+                Name = "EndDate",
+                ReadOnly = true,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "yyyy-MM-dd  HH:mm" },
+            };
+            this.TimeSpan = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "TimeElapsed",
+                HeaderText = "DURATION",
+                Name = "TimeSpan",
+                ReadOnly = true,
+                FillWeight = 70,
+            };
+            this.CategoryName = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "Category",
+                HeaderText = "CATEGORY",
+                Name = "CategoryName",
+                ReadOnly = true,
+            };
+            this.dataGridViewMain.Columns.AddRange(new DataGridViewColumn[] {
+                this.DateStart, this.EndDate, this.TimeSpan, this.CategoryName });
+
+            this.dataGridViewMain.SelectionChanged += new System.EventHandler(this.dataGridViewMain_SelectionChanged);
+            this.dataGridViewMain.Paint += new PaintEventHandler(this.dataGridViewMain_Paint);
+            this.dataGridViewMain.Resize += new System.EventHandler(this.dataGridViewMain_Resize);
+            this.dataGridViewMain.CellDoubleClick += new DataGridViewCellEventHandler(this.dataGridViewMain_CellDoubleClick);
+            this.dataGridViewMain.KeyDown += new KeyEventHandler(this.dataGridViewMain_KeyDown);
+
+            // Right-click context menu
+            this.gridContextMenu = new ContextMenuStrip
+            {
+                BackColor = Theme.InkElev,
+                ForeColor = Theme.Bone,
+                Renderer = new DarkMenuRenderer(),
+            };
+            this.editEntryContextMenuItem = NewMenu("Edit...");
+            this.deleteEntryContextMenuItem = NewMenu("Delete");
+            this.editEntryContextMenuItem.Click += new System.EventHandler(this.editEntryContextMenuItem_Click);
+            this.deleteEntryContextMenuItem.Click += new System.EventHandler(this.deleteEntryContextMenuItem_Click);
+            this.gridContextMenu.Items.AddRange(new ToolStripItem[] {
+                this.editEntryContextMenuItem, this.deleteEntryContextMenuItem });
+            this.dataGridViewMain.CellMouseDown += new DataGridViewCellMouseEventHandler(this.dataGridViewMain_CellMouseDown);
+            this.dataGridViewMain.ContextMenuStrip = this.gridContextMenu;
+        }
+
+        private void BuildStatusBar()
+        {
+            this.statusBar = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 76,
+                BackColor = Theme.InkElev,
+                Padding = new Padding(2, 8, 2, 8),
+            };
+            this.statusBar.Paint += PanelBorderPaint;
+
+            this.billingPeriodText = new Label
+            {
+                ForeColor = Theme.BoneMute,
+                Font = Theme.FontSmall,
+                AutoSize = true,
+                Location = new Point(8, 8),
+            };
+            this.statsTotalText = new Label
+            {
+                ForeColor = Theme.Bone,
+                Font = Theme.FontBase,
+                AutoSize = true,
+                Location = new Point(8, 26),
+            };
+            this.statsValueText = new Label
+            {
+                ForeColor = Theme.Star,
+                Font = Theme.FontMed,
+                AutoSize = true,
+                Location = new Point(180, 24),
+            };
+            this.statsSelectedText = new Label
+            {
+                ForeColor = Theme.BoneMute,
+                Font = Theme.FontSmall,
+                AutoSize = true,
+                Location = new Point(8, 46),
+                Visible = false,
+            };
+            this.statsCategoryText = new Label
+            {
+                ForeColor = Theme.BoneMute,
+                Font = Theme.FontSmall,
+                AutoSize = true,
+                Location = new Point(180, 46),
+                Visible = false,
+            };
+
+            this.createInvoiceButton = new Button
+            {
+                Text = "Create Invoice",
+                Font = Theme.FontBase,
+                Size = new Size(130, 34),
+                BackColor = Theme.Ember,
+                ForeColor = Theme.Bone,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            };
+            this.createInvoiceButton.FlatAppearance.BorderSize = 0;
+            this.createInvoiceButton.FlatAppearance.MouseOverBackColor = Theme.EmberHover;
+            this.createInvoiceButton.Click += new System.EventHandler(this.createInvoiceToolStripMenuItem_Click);
+
+            this.toolsButton = MakeFlatButton("Tools ▾", 90);
+            this.toolsButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            this.toolsButton.Click += new System.EventHandler(this.toolsButton_Click);
+
+            this.statusBar.Controls.Add(this.billingPeriodText);
+            this.statusBar.Controls.Add(this.statsTotalText);
+            this.statusBar.Controls.Add(this.statsValueText);
+            this.statusBar.Controls.Add(this.statsSelectedText);
+            this.statusBar.Controls.Add(this.statsCategoryText);
+            this.statusBar.Controls.Add(this.createInvoiceButton);
+            this.statusBar.Controls.Add(this.toolsButton);
+
+            this.statusBar.Resize += (s, e) =>
+            {
+                this.createInvoiceButton.Top = 20;
+                this.createInvoiceButton.Left = this.statusBar.Width - this.createInvoiceButton.Width - 8;
+                this.toolsButton.Top = 20;
+                this.toolsButton.Left = this.createInvoiceButton.Left - this.toolsButton.Width - 8;
+            };
+        }
+
+        /// <summary>Creates a flat dark button with an ink-line border.</summary>
+        private static Button MakeFlatButton(string text, int width)
+        {
+            var b = new Button
+            {
+                Text = text,
+                Font = Theme.FontBase,
+                Size = new Size(width, 34),
+                BackColor = Theme.InkElev,
+                ForeColor = Theme.Bone,
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
+            };
+            b.FlatAppearance.BorderColor = Theme.InkLine;
+            b.FlatAppearance.BorderSize = 1;
+            b.FlatAppearance.MouseOverBackColor = Theme.InkHover;
+            return b;
+        }
+
+        /// <summary>Draws a 1px top border line on elevated panels.</summary>
+        private void PanelBorderPaint(object sender, PaintEventArgs e)
+        {
+            var p = (Panel)sender;
+            using var pen = new Pen(Theme.InkLine);
+            e.Graphics.DrawLine(pen, 0, 0, p.Width, 0);
         }
 
         #endregion
-        private System.Windows.Forms.MenuStrip mainMenuStrip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.ToolStrip toolStripMain;
-        private System.Windows.Forms.ToolStripButton newToolStripButton;
-        private System.Windows.Forms.ToolStripButton openToolStripButton;
-        private System.Windows.Forms.ToolStripButton saveToolStripButton;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
-        private System.Windows.Forms.ToolStripButton copyToolStripButton;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
-        private System.Windows.Forms.DataGridView dataGridViewMain;
-        private System.Windows.Forms.ToolStripButton deleteToolStripButton;
-        private System.Windows.Forms.ToolStripButton addToolStripButton;
-        private System.Windows.Forms.ToolStripButton startTrackingToolStripButton;
-        private System.Windows.Forms.ToolStripButton stopTrackingToolStripButton;
-        private System.Windows.Forms.ToolStripTextBox trackingElapsedTimeToolStripTextBox;
-        private System.Windows.Forms.ToolStripTextBox trackingStartTimeToolStripTextBox;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DateStart;
-        private System.Windows.Forms.DataGridViewTextBoxColumn EndDate;
-        private System.Windows.Forms.DataGridViewTextBoxColumn TimeSpan;
-        private System.Windows.Forms.DataGridViewTextBoxColumn CategoryName;
-        private System.Windows.Forms.ToolStripComboBox categoryToolStripComboBox;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showInTaskbarToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem showInNotificationAreaToolStripMenuItem;
-        private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.ToolStripMenuItem languageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripStatusLabel statsTotalText;
-        private System.Windows.Forms.ToolStripStatusLabel statsSelectedText;
-        private System.Windows.Forms.ToolStripStatusLabel statsCategoryText;
-        private System.Windows.Forms.ToolStripStatusLabel billingPeriodText;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createInvoiceToolStripMenuItem;
     }
 }
-

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -14,118 +13,84 @@ using PersideraTimeTracker.Properties;
 namespace PersideraTimeTracker.Form
 {
     /// <summary>
-    /// Main application form class
+    /// Main application form. Rebuilt with a Persidera-branded dark theme:
+    /// a large live timer, an ember "Start Tracking" call-to-action, a dark
+    /// entry grid, and a status bar showing the current billing period value.
     /// </summary>
     public partial class Application : System.Windows.Forms.Form
     {
-        /// <summary>
-        /// Data file Extension
-        /// </summary>
         const String FILE_EXT = "timetracker";
-
-        /// <summary>
-        /// Default data file name
-        /// </summary>
         const String FILE_NAME = "table";
-
-        /// <summary>
-        /// Maximum length of category name
-        /// </summary>
         const int CATEGORY_MAXLENGTH = 255;
 
-        /// <summary>
-        /// Contains tracker data
-        /// </summary>
         private BindingList<TimeTrackerData> Data;
-
-        /// <summary>
-        /// Tracking service that handles a single tracker
-        /// </summary>
         private TrackingService TrackingService;
-
-        /// <summary>
-        /// Timer used for UI refreshes
-        /// </summary>
         private System.Windows.Forms.Timer RefreshTimer;
-
-        /// <summary>
-        /// Tooltip used in the form
-        /// </summary>
         private ToolTip toolTip = new ToolTip();
-
-        /// <summary>
-        /// Opened file (or stream)
-        /// </summary>
         private FileInfo file;
-
-        /// <summary>
-        /// Saves the initial culture
-        /// </summary>
         private static readonly CultureInfo defaultCulture = CultureInfo.CurrentCulture;
-
-        /// <summary>
-        /// Stores whether the current state is saved
-        /// </summary>
         private bool isSaved = true;
-
-        /// <summary>
-        /// Billing / Mercury invoicing settings (JSON-backed).
-        /// </summary>
         private AppSettings appSettings = AppSettings.Load();
 
-        /// <summary>
-        /// Main form of the application starts here
-        /// </summary>
         public Application()
         {
             Data = new BindingList<TimeTrackerData>();
-
             TrackingService = new TrackingService();
 
-            RefreshTimer = new System.Windows.Forms.Timer
-            {
-                Interval = 100
-            };
+            RefreshTimer = new System.Windows.Forms.Timer { Interval = 100 };
             RefreshTimer.Tick += new System.EventHandler(RefreshTrackingInfo);
-
-#if false
-            // Test data
-            TrackedDataCategory cat = new TrackedDataCategory("TestCat");
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddHours(14), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddDays(14), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddDays(14).AddMinutes(8), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddHours(2).AddSeconds(66), cat));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now));
-            Data.Add(new TimeTrackerData(DateTimeOffset.Now.AddSeconds(81), cat));
-#endif
 
             InitializeComponent();
 
-            // TODO: Finish add and copy buttons
-            // Remove not implemented buttons
-            this.toolStripMain.Items.RemoveByKey("addToolStripButton");
-            this.toolStripMain.Items.RemoveByKey("copyToolStripButton");
+            // Load the window icon from the embedded clock.ico resource.
+            try
+            {
+                var asm = System.Reflection.Assembly.GetExecutingAssembly();
+                using var iconStream = asm.GetManifestResourceStream("PersideraTimeTracker.Images.clock.ico");
+                if (iconStream != null)
+                {
+                    this.Icon = new System.Drawing.Icon(iconStream);
+                    this.notifyIcon.Icon = this.Icon;
+                }
+            }
+            catch { /* icon is non-essential */ }
 
             this.dataGridViewMain.DataSource = Data;
-            this.categoryToolStripComboBox.MaxLength = CATEGORY_MAXLENGTH;
-
+            this.categoryComboBox.MaxLength = CATEGORY_MAXLENGTH;
 
             this.Refresh();
             Data.ListChanged += new ListChangedEventHandler(DataListChanged);
             RefreshTitle();
             RefreshTrackingButtons();
             RefreshEditButtons();
-            RefreshFileButtons();
             RefreshStatistics();
             RefreshBillingStatus();
             LoadSettings();
 
             BuildLanguageSelection();
+
+            this.Shown += Application_Shown;
         }
 
         /// <summary>
-        /// Fills the language selection menu
+        /// After the form is shown, prompt to connect Mercury invoicing if it
+        /// has not been configured yet (first-run wizard).
         /// </summary>
+        private void Application_Shown(object sender, EventArgs e)
+        {
+            string token;
+            try { token = CredentialManager.GetToken(); }
+            catch { token = null; }
+
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(appSettings.MercuryCustomerId))
+            {
+                using var setup = new MercurySetupForm(appSettings);
+                setup.ShowDialog(this);
+                appSettings = AppSettings.Load();
+                RefreshBillingStatus();
+            }
+        }
+
         private void BuildLanguageSelection()
         {
             Dictionary<string, string> items = new Dictionary<string, string>(){
@@ -142,97 +107,64 @@ namespace PersideraTimeTracker.Form
                 {
                     Text = localizedLanguageName == null ? item.Value : string.Format("{0} ({1})", localizedLanguageName, item.Value),
                     Checked = Settings.Default.language == item.Key,
+                    ForeColor = Theme.Bone,
+                    BackColor = Theme.InkElev,
                 };
                 menuItem.Click += (sender, e) => LanguageItemClicked(sender, e, item.Key);
-
                 this.languageToolStripMenuItem.DropDownItems.Add(menuItem);
             }
         }
 
         private void LanguageItemClicked(object sender, EventArgs e, string language)
         {
-            // set the language
             Settings.Default.language = language;
+            if (!(sender is ToolStripMenuItem)) return;
 
-            if (!(sender is ToolStripMenuItem))
+            foreach (ToolStripMenuItem item in this.languageToolStripMenuItem.DropDownItems)
             {
-                return;
+                item.Checked = false;
             }
+            ((ToolStripMenuItem)sender).Checked = true;
 
-            // reset all items
-            var items = this.languageToolStripMenuItem.DropDownItems;
-            foreach (ToolStripMenuItem item in items)
-            {
-                if (!(item is ToolStripMenuItem))
-                {
-                    continue;
-                }
-
-                var menuItem = (ToolStripMenuItem)item;
-                menuItem.Checked = false;
-            }
-
-            // check clicked item
-            ToolStripMenuItem clickedItem = (ToolStripMenuItem)sender;
-            clickedItem.Checked = true;
-
-            // warn user that they need to restart
             MessageBox.Show(this, Resources.Application_languageChangedMessageBox_Message, Resources.Application_languageChangedMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
-        /// <summary>
-        /// Loads the application's settings
-        /// </summary>
         private void LoadSettings()
         {
-            // set the menu options to correct values
             this.alwaysOnTopToolStripMenuItem.Checked = Settings.Default.alwaysOnTop;
             this.showInTaskbarToolStripMenuItem.Checked = Settings.Default.showInTaskbar;
             this.showInNotificationAreaToolStripMenuItem.Checked = Settings.Default.showInNotificationArea;
 
-            // run the event handlers
             this.alwaysOnTopToolStripMenuItem_CheckedChanged(null, null);
             this.showInTaskbarToolStripMenuItem_CheckedChanged(null, null);
             this.showInNotificationAreaToolStripMenuItem_CheckedChanged(null, null);
         }
 
-        /// <summary>
-        /// Saves the application's settings
-        /// </summary>
         private void SaveSettings()
         {
             Settings.Default.alwaysOnTop = this.alwaysOnTopToolStripMenuItem.Checked;
             Settings.Default.showInTaskbar = this.showInTaskbarToolStripMenuItem.Checked;
             Settings.Default.showInNotificationArea = this.showInNotificationAreaToolStripMenuItem.Checked;
-
             Settings.Default.Save();
         }
 
-        /// <summary>
-        /// Sets application title dynamically
-        /// </summary>
         private void RefreshTitle()
         {
-            var text = ProductName;
-
+            var text = "Persidera Time Tracker";
             if (file != null && file.Exists && file.Name.Length > 0)
             {
                 var modifier = isSaved ? "" : "*";
-                text = String.Format("{1}{2} - {0}", text, file.Name, modifier);
+                text = String.Format("{1}{2} — {0}", text, file.Name, modifier);
             }
-
             this.Text = text;
-            notifyIcon.Text = text;
+            if (notifyIcon != null) notifyIcon.Text = text;
         }
 
         private void RefreshFileButtons()
         {
             bool saveAvailable = SaveAvailable();
-            this.saveToolStripButton.Enabled = saveAvailable;
             this.saveToolStripMenuItem.Enabled = saveAvailable;
             this.closeToolStripMenuItem.Enabled = file != null;
-
-            // nothing to save
             this.saveAsToolStripMenuItem.Enabled = Data.Count > 0;
         }
 
@@ -245,15 +177,12 @@ namespace PersideraTimeTracker.Form
 
             if (grid.SelectedRows.Count > 1)
             {
-                var selectionEnumerator = grid.SelectedRows.GetEnumerator();
                 TimeSpan statSelection = new TimeSpan();
-                while (selectionEnumerator.MoveNext())
+                foreach (DataGridViewRow row in grid.SelectedRows)
                 {
-                    var row = (DataGridViewRow)selectionEnumerator.Current;
                     var data = (TimeTrackerData)row.DataBoundItem;
                     statSelection = statSelection.Add(data.GetTimeElapsed());
                 }
-
                 this.statsSelectedText.Text = String.Format(Properties.Resources.Application_statsSelected_Text, grid.SelectedRows.Count, statSelection.Format());
                 this.statsSelectedText.Visible = true;
             }
@@ -267,7 +196,6 @@ namespace PersideraTimeTracker.Form
                 var selected = (TimeTrackerData)grid.SelectedRows[0].DataBoundItem;
                 var category = selected.Category;
                 TimeSpan statCategory = Data.Where(value => category == null ? value.Category == null : value.Category != null && value.Category.Equals(category)).Sum(value => value.GetTimeElapsed());
-
                 this.statsCategoryText.Text = String.Format(Properties.Resources.Application_statsCategory_Text, category == null ? "" : category.Name, statCategory.Format());
                 this.statsCategoryText.Visible = true;
             }
@@ -277,11 +205,6 @@ namespace PersideraTimeTracker.Form
             }
         }
 
-        /// <summary>
-        /// Called on data list change
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void DataListChanged(object sender, ListChangedEventArgs e)
         {
             isSaved = false;
@@ -291,23 +214,11 @@ namespace PersideraTimeTracker.Form
             RefreshBillingStatus();
         }
 
-
-        /// <summary>
-        /// Exit application when user clicks on File > Exit
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             System.Windows.Forms.Application.Exit();
-
         }
 
-        /// <summary>
-        /// Display "about" dialog box
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             AboutBox aboutBox = new AboutBox();
@@ -320,86 +231,79 @@ namespace PersideraTimeTracker.Form
             RefreshStatistics();
         }
 
-        /// <summary>
-        /// Refreshes grid edit buttons when necessary to reflect options available to do with that data
-        /// </summary>
         private void RefreshEditButtons()
         {
-            DataGridView grid = this.dataGridViewMain;
-            var count = grid.SelectedRows.Count;
+            var count = this.dataGridViewMain.SelectedRows.Count;
+            this.editEntryContextMenuItem.Enabled = count == 1;
+            this.deleteEntryContextMenuItem.Enabled = count >= 1;
+        }
 
-            // Decide on delete button
-            if (count < 1)
+        #region Tracking
+
+        private void trackButton_Click(object sender, EventArgs e)
+        {
+            if (TrackingService.Tracking)
             {
-                deleteToolStripButton.Enabled = false;
+                StopTracking();
             }
             else
             {
-                deleteToolStripButton.Enabled = true;
+                StartTracking();
             }
         }
 
-        private void deleteToolStripButton_Click(object sender, EventArgs e)
-        {
-            DataGridView grid = this.dataGridViewMain;
-            var count = grid.SelectedRows.Count;
-
-            var result = MessageBox.Show(this, String.Format(Properties.Resources.Application_deleteMessageBox_Message, count),
-                Resources.Application_deleteMessageBox_Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-            if (result == DialogResult.Yes)
-            {
-                foreach (DataGridViewRow selectedRow in grid.SelectedRows)
-                {
-                    Data.Remove(selectedRow.DataBoundItem as TimeTrackerData);
-                }
-                RefreshCategoryPicker();
-            }
-
-        }
-
-        private void startTrackingToolStripButton_Click(object sender, EventArgs e)
+        private void StartTracking()
         {
             TrackingService.Start();
             RefreshTimer.Start();
             RefreshTrackingButtons();
-            this.trackingStartTimeToolStripTextBox.Text = TrackingService.StartTime.LocalDateTime.ToString("h\\:mm\\:ss");
-            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
+            this.timerLabel.Text = TrackingService.Elapsed;
         }
 
-        private void stopTrackingToolStripButton_Click(object sender, EventArgs e)
+        private void StopTracking()
         {
             RefreshTimer.Stop();
-
             TimeTrackerData item = TrackingService.Stop();
-            // fill in category
-            if (categoryToolStripComboBox.Text.Length > 0)
+            if (categoryComboBox.Text.Length > 0)
             {
-                item.Category = new TrackedDataCategory(categoryToolStripComboBox.Text.Trim(' '));
+                item.Category = new TrackedDataCategory(categoryComboBox.Text.Trim(' '));
             }
-
             Data.Add(item);
             RefreshTrackingButtons();
             RefreshCategoryPicker();
+            this.timerLabel.Text = "00:00:00";
         }
 
         private void RefreshTrackingButtons()
         {
-            var tracking = TrackingService.Tracking;
-
-            this.startTrackingToolStripButton.Enabled = !tracking;
-            this.stopTrackingToolStripButton.Enabled = tracking;
+            bool tracking = TrackingService.Tracking;
+            if (tracking)
+            {
+                this.trackButton.Text = "■  STOP TRACKING";
+                this.trackButton.BackColor = Theme.Star;
+                this.trackButton.ForeColor = Theme.Ink;
+                this.trackButton.FlatAppearance.MouseOverBackColor = Theme.Star;
+                this.timerLabel.ForeColor = Theme.Star;
+            }
+            else
+            {
+                this.trackButton.Text = "▶  START TRACKING";
+                this.trackButton.BackColor = Theme.Ember;
+                this.trackButton.ForeColor = Theme.Bone;
+                this.trackButton.FlatAppearance.MouseOverBackColor = Theme.EmberHover;
+                this.timerLabel.ForeColor = Theme.BoneMute;
+            }
         }
 
         private void RefreshTrackingInfo(object sender, EventArgs e)
         {
-            this.trackingElapsedTimeToolStripTextBox.Text = TrackingService.Elapsed;
+            this.timerLabel.Text = TrackingService.Elapsed;
         }
 
-        /// <summary>
-        /// Saves the current table to file
-        /// </summary>
-        /// <param name="forceOpenSaveWindow">Whether to open the save dialogue even when the target path is already known</param>
+        #endregion
+
+        #region File operations
+
         private void Save(bool forceOpenSaveWindow = false)
         {
             if (forceOpenSaveWindow || file == null)
@@ -411,11 +315,8 @@ namespace PersideraTimeTracker.Form
                     DefaultExt = FILE_EXT,
                     FileName = "table",
                     Filter = String.Format("TimeTracker files (*.{0})|*.{0}|All files (*.*)|*.*", FILE_EXT),
-
-                    // use directory with "current" file if available
                     InitialDirectory = file == null ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : file.DirectoryName
                 };
-
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     file = new FileInfo(dialog.FileName);
@@ -434,12 +335,12 @@ namespace PersideraTimeTracker.Form
                 catch (Exception)
                 {
                     MessageBox.Show(this, Properties.Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
                 finally
                 {
-                    fs.Close();
+                    fs?.Close();
                 }
                 isSaved = true;
             }
@@ -448,9 +349,6 @@ namespace PersideraTimeTracker.Form
             RefreshTitle();
         }
 
-        /// <summary>
-        /// Opens an existing file with table data
-        /// </summary>
         private void Open()
         {
             SaveIfNecessary();
@@ -461,8 +359,6 @@ namespace PersideraTimeTracker.Form
                 DefaultExt = FILE_EXT,
                 FileName = FILE_NAME,
                 Filter = String.Format("TimeTracker files (*.{0})|*.{0}|All files (*.*)|*.*", FILE_EXT),
-
-                // use directory with "current" file if available
                 InitialDirectory = file == null ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : file.DirectoryName
             };
 
@@ -476,7 +372,7 @@ namespace PersideraTimeTracker.Form
                 if (!file.Exists)
                 {
                     MessageBox.Show(this, Resources.Application_nonexistentFileMessageBox_Message,
-                    Resources.Application_nonexistentFileMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Resources.Application_nonexistentFileMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -485,7 +381,6 @@ namespace PersideraTimeTracker.Form
                 {
                     Data.Clear();
                     fs = file.OpenText();
-
                     string line;
                     while ((line = fs.ReadLine()) != null)
                     {
@@ -496,21 +391,19 @@ namespace PersideraTimeTracker.Form
                 catch (DeserializationException)
                 {
                     MessageBox.Show(this, Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-
+                        Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     file = null;
-
                     return;
                 }
                 catch (Exception)
                 {
                     MessageBox.Show(this, Resources.Application_fileErrorMessageBox_Message,
-                    Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        Resources.Application_fileErrorMessageBox_Caption, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return;
                 }
                 finally
                 {
-                    fs.Close();
+                    fs?.Close();
                 }
                 isSaved = true;
             }
@@ -520,42 +413,26 @@ namespace PersideraTimeTracker.Form
             RefreshCategoryPicker();
         }
 
-        /// <summary>
-        /// Checks whether there are any changes to the table, offering the user the option to save them
-        /// </summary>
-        /// <returns></returns>
         private DialogResult SaveIfNecessary()
         {
             if (SaveAvailable())
             {
                 var result = MessageBox.Show(this, Properties.Resources.Application_unsavedMessageBox_Message,
                     Resources.Application_unsavedMessageBox_Caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-
                 if (result == DialogResult.Yes)
                 {
                     Save();
                 }
-
                 return result;
             }
-
             return DialogResult.Abort;
         }
 
-        /// <summary>
-        /// Checks whether save should be available
-        /// </summary>
-        /// <returns></returns>
         private bool SaveAvailable()
         {
             return !isSaved && Data.Count > 0;
         }
 
-        /// <summary>
-        /// Application closing event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Application_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (SaveIfNecessary() == DialogResult.Cancel)
@@ -568,45 +445,166 @@ namespace PersideraTimeTracker.Form
             }
         }
 
-        /// <summary>
-        /// Collects all categories from the data set and returns a unique set
-        /// </summary>
-        /// <returns>The set of categories</returns>
+        #endregion
+
+        #region Categories
+
         private HashSet<TrackedDataCategory> GetUsedCategories()
         {
             var result = new HashSet<TrackedDataCategory>();
             foreach (var value in Data)
             {
-                if (value.Category == null)
-                {
-                    continue;
-                }
-
+                if (value.Category == null) continue;
                 result.Add(value.Category);
             }
-
             return result;
         }
 
-        /// <summary>
-        /// Updates the category picker with newly-collected categories
-        /// </summary>
         private void RefreshCategoryPicker()
         {
-            var items = this.categoryToolStripComboBox.Items;
+            var current = this.categoryComboBox.Text;
+            var items = this.categoryComboBox.Items;
             items.Clear();
             items.AddRange(GetUsedCategories().ToArray());
+            this.categoryComboBox.Text = current;
         }
+
+        private void addCategoryButton_Click(object sender, EventArgs e)
+        {
+            string name = this.categoryComboBox.Text.Trim();
+            if (string.IsNullOrEmpty(name))
+            {
+                MessageBox.Show(this, "Type a category name in the box first, then click Add.",
+                    "Add Category", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            var cat = new TrackedDataCategory(name);
+            if (!this.categoryComboBox.Items.Contains(cat))
+            {
+                this.categoryComboBox.Items.Add(cat);
+            }
+            this.categoryComboBox.Text = name;
+        }
+
+        private void categoryComboBox_TextUpdate(object sender, EventArgs e)
+        {
+            ComboBox box = (ComboBox)sender;
+            var text = box.Text;
+            var original = text;
+
+            Regex regex = new Regex("[^-_: \\w]");
+            text = regex.Replace(text, "");
+
+            if (original != text)
+            {
+                toolTip.Hide(this.categoryComboBox);
+                toolTip.Show(String.Format(Resources.Application_categoryToolTip_Text, "-_: "), this.categoryComboBox, 5000);
+            }
+
+            if (text.Length > CATEGORY_MAXLENGTH)
+            {
+                text = text.Substring(0, CATEGORY_MAXLENGTH);
+            }
+
+            if (box.Text != text)
+            {
+                box.Text = text;
+                box.SelectionStart = text.Length;
+            }
+        }
+
+        #endregion
+
+        #region Entry editing (double-click / context menu / delete key)
+
+        private void dataGridViewMain_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            EditEntry(this.dataGridViewMain.Rows[e.RowIndex]);
+        }
+
+        private void dataGridViewMain_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
+            {
+                var row = this.dataGridViewMain.Rows[e.RowIndex];
+                if (!row.Selected)
+                {
+                    this.dataGridViewMain.ClearSelection();
+                    row.Selected = true;
+                }
+            }
+        }
+
+        private void dataGridViewMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete && this.dataGridViewMain.SelectedRows.Count > 0)
+            {
+                DeleteSelectedEntries();
+                e.Handled = true;
+            }
+        }
+
+        private void editEntryContextMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.dataGridViewMain.SelectedRows.Count == 1)
+            {
+                EditEntry(this.dataGridViewMain.SelectedRows[0]);
+            }
+        }
+
+        private void deleteEntryContextMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteSelectedEntries();
+        }
+
+        private void EditEntry(DataGridViewRow row)
+        {
+            if (row?.DataBoundItem is not TimeTrackerData entry) return;
+
+            using var dialog = new EntryEditForm(entry);
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                int index = Data.IndexOf(entry);
+                if (index < 0) return;
+                Data[index] = new TimeTrackerData(dialog.ResultStart, dialog.ResultEnd, dialog.ResultCategory);
+                RefreshCategoryPicker();
+                RefreshStatistics();
+            }
+        }
+
+        private void DeleteSelectedEntries()
+        {
+            DataGridView grid = this.dataGridViewMain;
+            var count = grid.SelectedRows.Count;
+            if (count < 1) return;
+
+            var result = MessageBox.Show(this, String.Format(Properties.Resources.Application_deleteMessageBox_Message, count),
+                Resources.Application_deleteMessageBox_Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                foreach (DataGridViewRow selectedRow in grid.SelectedRows)
+                {
+                    if (selectedRow.DataBoundItem is TimeTrackerData item)
+                    {
+                        Data.Remove(item);
+                    }
+                }
+                RefreshCategoryPicker();
+            }
+        }
+
+        #endregion
+
+        #region File menu handlers
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveIfNecessary();
             Data.Clear();
-
-            // No need to close handles here, FileInfo doesn't use them
             file = null;
             isSaved = true;
-
             RefreshFileButtons();
             RefreshEditButtons();
             RefreshTitle();
@@ -614,14 +612,7 @@ namespace PersideraTimeTracker.Form
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // It turns out that the "new" action does exactly the same as the "close" action
             closeToolStripMenuItem_Click(sender, e);
-        }
-
-        private void newToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "new" menu item
-            newToolStripMenuItem_Click(sender, e);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -634,41 +625,27 @@ namespace PersideraTimeTracker.Form
             Open();
         }
 
-        private void openToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "open" menu item
-            openToolStripMenuItem_Click(sender, e);
-        }
-
-        private void saveToolStripButton_Click(object sender, EventArgs e)
-        {
-            // shortcut for the "save" menu item
-            saveToolStripMenuItem_Click(sender, e);
-        }
-
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save(true);
         }
 
-        /// <summary>
-        /// Draws a custom message inside the grid view when it's empty
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        #endregion
+
+        #region Empty-grid placeholder
+
         private void dataGridViewMain_Paint(object sender, PaintEventArgs e)
         {
             DataGridView grid = (DataGridView)sender;
             if (grid.Rows.Count == 0)
             {
-                var font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-
-                // figure out label position
+                var font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
                 System.Drawing.SizeF labelSize = e.Graphics.MeasureString(Resources.Application_noDataLabel, font);
                 float vertPos = (grid.Width - labelSize.Width) / 2;
                 float horizPos = (grid.Height + grid.ColumnHeadersHeight - labelSize.Height) / 2;
-
-                e.Graphics.DrawString(Resources.Application_noDataLabel, font, System.Drawing.Brushes.DimGray, new System.Drawing.PointF(vertPos < 0 ? 0 : vertPos, horizPos < grid.ColumnHeadersHeight ? grid.ColumnHeadersHeight : horizPos));
+                using var brush = new System.Drawing.SolidBrush(Theme.BoneDim);
+                e.Graphics.DrawString(Resources.Application_noDataLabel, font, brush,
+                    new System.Drawing.PointF(vertPos < 0 ? 0 : vertPos, horizPos < grid.ColumnHeadersHeight ? grid.ColumnHeadersHeight : horizPos));
             }
         }
 
@@ -677,34 +654,13 @@ namespace PersideraTimeTracker.Form
             DataGridView grid = (DataGridView)sender;
             if (grid.Rows.Count == 0)
             {
-                // repaint whole area to make sure our custom text gets drawn in correct place
                 grid.Invalidate();
             }
         }
 
-        private void categoryToolStripComboBox_TextUpdate(object sender, EventArgs e)
-        {
-            // make sure that there are no invalid characters in the category field
-            ToolStripComboBox box = (ToolStripComboBox)sender;
-            var text = box.Text;
-            var original = text;
+        #endregion
 
-            Regex regex = new Regex("[^-_: \\w]");
-            text = regex.Replace(text, "");
-
-            if (original != text)
-            {
-                toolTip.Hide(this.categoryToolStripComboBox.Control);
-                toolTip.Show(String.Format(Resources.Application_categoryToolTip_Text, "-_: "), this.categoryToolStripComboBox.Control, 5000);
-            }
-
-            if (text.Length > CATEGORY_MAXLENGTH)
-            {
-                text = text.Substring(0, CATEGORY_MAXLENGTH);
-            }
-
-            box.Text = text;
-        }
+        #region Options menu handlers
 
         private void alwaysOnTopToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
@@ -725,64 +681,87 @@ namespace PersideraTimeTracker.Form
         {
             if (this.WindowState == FormWindowState.Minimized)
             {
-                // restore
                 this.WindowState = FormWindowState.Normal;
                 this.ShowInTaskbar = this.showInTaskbarToolStripMenuItem.Checked;
             }
             else
             {
-                // hide
                 this.WindowState = FormWindowState.Minimized;
                 this.ShowInTaskbar = false;
             }
         }
 
+        #endregion
+
         #region Mercury invoicing & billing periods
 
-        /// <summary>
-        /// Updates the status-bar label with the current billing period, hours
-        /// tracked in it and the billable value at the configured rate.
-        /// </summary>
         private void RefreshBillingStatus()
         {
             try
             {
                 var (start, end) = BillingPeriodService.GetCurrentPeriod(appSettings);
                 var periodEntries = BillingPeriodService.GetEntriesForPeriod(Data, start, end);
-                double hours = periodEntries.Sum(e => e.GetTimeElapsed().TotalHours);
+                double hours = periodEntries.Sum(en => en.GetTimeElapsed().TotalHours);
                 decimal value = MercuryInvoicingService.CalculateAmount(periodEntries, appSettings.HourlyRate);
 
-                this.billingPeriodText.Text = string.Format(
-                    "Current period: {0:yyyy-MM-dd} – {1:yyyy-MM-dd} | {2:0.00}h tracked | {3:C}",
-                    start, end, hours, value);
+                this.billingPeriodText.Text = string.Format("Period: {0:MMM d} – {1:MMM d}", start, end);
+                this.statsTotalText.Text = string.Format("{0:0.00}h this period · ", hours)
+                    + string.Format(Properties.Resources.Application_statsTotal_Text,
+                        Data.Sum(en => en.GetTimeElapsed()).Format());
+                this.statsValueText.Text = string.Format("{0:C}", value);
             }
             catch (Exception)
             {
                 this.billingPeriodText.Text = "";
+                this.statsValueText.Text = "";
             }
         }
 
-        /// <summary>
-        /// Opens the settings dialog, then refreshes the billing status.
-        /// </summary>
+        private void toolsButton_Click(object sender, EventArgs e)
+        {
+            this.toolsToolStripMenuItem.ShowDropDown();
+        }
+
+        private void viewPeriodToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var (start, end) = BillingPeriodService.GetCurrentPeriod(appSettings);
+            var periodEntries = new HashSet<TimeTrackerData>(BillingPeriodService.GetEntriesForPeriod(Data, start, end));
+
+            this.dataGridViewMain.ClearSelection();
+            int firstMatch = -1;
+            foreach (DataGridViewRow row in this.dataGridViewMain.Rows)
+            {
+                if (row.DataBoundItem is TimeTrackerData item && periodEntries.Contains(item))
+                {
+                    row.Selected = true;
+                    if (firstMatch < 0) firstMatch = row.Index;
+                }
+            }
+
+            if (firstMatch >= 0)
+            {
+                this.dataGridViewMain.FirstDisplayedScrollingRowIndex = firstMatch;
+            }
+            else
+            {
+                MessageBox.Show(this,
+                    string.Format("No entries in the current billing period ({0:yyyy-MM-dd} – {1:yyyy-MM-dd}).", start, end),
+                    "Current Period", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var dialog = new SettingsForm(appSettings))
             {
                 if (dialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    // appSettings is mutated in place and saved by the dialog;
-                    // reload to be safe in case of external changes.
                     appSettings = AppSettings.Load();
                     RefreshBillingStatus();
                 }
             }
         }
 
-        /// <summary>
-        /// Creates a Mercury invoice for the current billing period after
-        /// confirming with the user.
-        /// </summary>
         private async void createInvoiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var (start, end) = BillingPeriodService.GetCurrentPeriod(appSettings);
@@ -796,16 +775,9 @@ namespace PersideraTimeTracker.Form
                 return;
             }
 
-            // Verify Mercury is configured before doing anything.
             bool tokenConfigured;
-            try
-            {
-                tokenConfigured = CredentialManager.HasToken();
-            }
-            catch (Exception)
-            {
-                tokenConfigured = false;
-            }
+            try { tokenConfigured = CredentialManager.HasToken(); }
+            catch { tokenConfigured = false; }
 
             bool idsConfigured = !string.IsNullOrWhiteSpace(appSettings.MercuryCustomerId)
                 && !string.IsNullOrWhiteSpace(appSettings.MercuryDestinationAccountId);
@@ -828,20 +800,16 @@ namespace PersideraTimeTracker.Form
                     hours, appSettings.HourlyRate, total, start, end),
                 "Create Invoice", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (confirm != DialogResult.Yes)
-            {
-                return;
-            }
+            if (confirm != DialogResult.Yes) return;
 
             this.createInvoiceToolStripMenuItem.Enabled = false;
+            this.createInvoiceButton.Enabled = false;
             this.UseWaitCursor = true;
             try
             {
                 var service = new MercuryInvoicingService(appSettings);
-                // Invoice dated today; due in 14 days.
                 DateTime invoiceDate = DateTime.Today;
                 DateTime dueDate = invoiceDate.AddDays(14);
-
                 string response = await service.CreateInvoiceAsync(periodEntries, invoiceDate, dueDate);
 
                 MessageBox.Show(this,
@@ -866,6 +834,7 @@ namespace PersideraTimeTracker.Form
             {
                 this.UseWaitCursor = false;
                 this.createInvoiceToolStripMenuItem.Enabled = true;
+                this.createInvoiceButton.Enabled = true;
             }
         }
 

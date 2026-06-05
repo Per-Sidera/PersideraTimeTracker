@@ -48,7 +48,7 @@ namespace PersideraTimeTracker.Form
                         return titleAttribute.Title;
                     }
                 }
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return Assembly.GetExecutingAssembly().GetName().Name ?? "Persidera Time Tracker";
             }
         }
 

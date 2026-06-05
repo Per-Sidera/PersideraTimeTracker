@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>PersideraTimeTracker</AssemblyName>
     <RootNamespace>PersideraTimeTracker</RootNamespace>
@@ -15,12 +15,18 @@
     <Description>Persidera Industries internal time tracker with Mercury invoicing.</Description>
     <!-- We supply our own assembly attributes (AssemblyInfo.cs / license attributes). -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- TFM is net8.0-windows; CA1416 platform-compat warnings are false positives here. -->
-    <NoWarn>CA1416</NoWarn>
+    <!-- TFM is net9.0-windows; CA1416 platform-compat warnings are false positives here. -->
+    <!-- WFO5001: Application.SetColorMode (dark mode) is an evaluation API we opt into. -->
+    <NoWarn>CA1416;WFO5001</NoWarn>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\clock.ico" />
