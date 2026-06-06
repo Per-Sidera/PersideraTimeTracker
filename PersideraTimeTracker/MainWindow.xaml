@@ -122,8 +122,7 @@
                             Margin="0,0,8,0">
                     <ComboBox Width="140" Height="36"
                               ItemsSource="{Binding Projects}"
-                              SelectedItem="{Binding SelectedProject}"
-                              DisplayMemberPath="Name">
+                              SelectedItem="{Binding SelectedProject}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
