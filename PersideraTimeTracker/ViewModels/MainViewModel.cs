@@ -45,6 +45,9 @@ namespace PersideraTimeTracker.ViewModels
         private bool _isTracking;
 
         [ObservableProperty]
+        private bool _isManualMode = false;
+
+        [ObservableProperty]
         private string _runningTimerDisplay = "00:00:00";
 
         [ObservableProperty]
@@ -77,46 +80,77 @@ namespace PersideraTimeTracker.ViewModels
         // ---------- Commands ----------
 
         [RelayCommand]
+        private void ToggleMode()
+        {
+            if (IsTracking) return; // can't switch mode while timer is running
+            IsManualMode = !IsManualMode;
+            ManualStartTime = "";
+            ManualEndTime = "";
+        }
+
+        [RelayCommand]
         private void AddEntry()
         {
             if (IsTracking) { StopTracking(); return; }
 
-            // Try manual time entry first
-            if (!string.IsNullOrEmpty(ManualStartTime) && !string.IsNullOrEmpty(ManualEndTime))
+            if (IsManualMode)
             {
-                if (TryParseTime(ManualStartTime, out var start) && TryParseTime(ManualEndTime, out var end))
+                // Manual mode: require both times to be valid
+                if (!TryParseTime(ManualStartTime, out var start))
                 {
-                    var today = DateTime.Today;
-                    var entry = new TimeEntry
-                    {
-                        StartTime = today.Add(start),
-                        EndTime = today.Add(end),
-                        Description = string.IsNullOrWhiteSpace(NewEntryDescription) ? "(no description)" : NewEntryDescription.Trim(),
-                        Category = SelectedProject?.Name ?? "",
-                        IsBillable = NewEntryBillable
-                    };
-                    if (entry.Duration > TimeSpan.Zero)
-                    {
-                        _entries.Add(entry);
-                        Persist(); RebuildGroups(); UpdateStatusBar();
-                        NewEntryDescription = "";
-                        ManualStartTime = "";
-                        ManualEndTime = "";
-                        return;
-                    }
+                    MessageBox.Show("Enter a valid start time (e.g. 9:30 or 14:00).", "Invalid Time",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+                if (!TryParseTime(ManualEndTime, out var end))
+                {
+                    MessageBox.Show("Enter a valid end time (e.g. 17:30 or 5:00 PM).", "Invalid Time",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                var today = DateTime.Today;
+                var entry = new TimeEntry
+                {
+                    StartTime = today.Add(start),
+                    EndTime = today.Add(end),
+                    Description = string.IsNullOrWhiteSpace(NewEntryDescription) ? "(no description)" : NewEntryDescription.Trim(),
+                    Category = SelectedProject?.Name ?? "",
+                    IsBillable = NewEntryBillable
+                };
+                if (entry.Duration <= TimeSpan.Zero)
+                {
+                    MessageBox.Show("End time must be after start time.", "Invalid Time",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                _entries.Add(entry);
+                Persist(); RebuildGroups(); UpdateStatusBar();
+                NewEntryDescription = "";
+                ManualStartTime = "";
+                ManualEndTime = "";
             }
-            // Fall through to timer
-            StartTracking();
+            else
+            {
+                StartTracking();
+            }
         }
 
         private static bool TryParseTime(string input, out TimeSpan result)
         {
             result = default;
-            if (DateTime.TryParseExact(input, new[] { "H:mm", "HH:mm", "h:mm tt", "h:mmtt" },
+            if (string.IsNullOrWhiteSpace(input)) return false;
+            // Try common formats: 9:30, 09:30, 14:00, 9:30 AM, 9:30AM
+            var formats = new[] { "H:mm", "HH:mm", "h:mm tt", "h:mmtt", "h:mm t", "h:mmt" };
+            if (DateTime.TryParseExact(input.Trim(), formats,
                 CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
             {
                 result = dt.TimeOfDay;
+                return true;
+            }
+            // Fallback: try current culture
+            if (DateTime.TryParse(input.Trim(), out var dt2))
+            {
+                result = dt2.TimeOfDay;
                 return true;
             }
             return false;

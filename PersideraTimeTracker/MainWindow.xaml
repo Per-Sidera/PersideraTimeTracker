@@ -54,6 +54,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="44"/>
                     <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="36"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0" Margin="0,0,8,0" VerticalAlignment="Center">
@@ -74,10 +75,20 @@
                     </TextBlock>
                 </Grid>
 
-                <!-- Manual time range: [09:30] – [17:30] -->
+                <!-- Manual time range — only visible in manual mode -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"
                             Margin="0,0,8,0">
-                    <Grid Width="52" Height="36">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsManualMode}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Grid Width="75" Height="36">
                         <TextBox x:Name="StartBox" Height="36" TextAlignment="Center"
                                  Text="{Binding ManualStartTime, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="09:30" Foreground="#6A6A6A" FontSize="13"
@@ -97,7 +108,7 @@
                     </Grid>
                     <TextBlock Text="&#8211;" Foreground="#6A6A6A" FontSize="14"
                                VerticalAlignment="Center" Margin="6,0"/>
-                    <Grid Width="52" Height="36">
+                    <Grid Width="75" Height="36">
                         <TextBox x:Name="EndBox" Height="36" TextAlignment="Center"
                                  Text="{Binding ManualEndTime, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock Text="17:30" Foreground="#6A6A6A" FontSize="13"
@@ -161,34 +172,46 @@
                     </ToggleButton.Template>
                 </ToggleButton>
 
-                <!-- ADD / STOP -->
+                <!-- ADD / STOP / START -->
                 <Button Grid.Column="4" Height="36" VerticalAlignment="Center"
                         Command="{Binding AddEntryCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource EmberButton}">
-                            <Setter Property="Content" Value="&#9654;  ADD"/>
+                            <Setter Property="Content" Value="&#9654;  START"/>
                             <Style.Triggers>
+                                <!-- Manual mode: show ADD -->
+                                <DataTrigger Binding="{Binding IsManualMode}" Value="True">
+                                    <Setter Property="Content" Value="&#9654;  ADD"/>
+                                </DataTrigger>
+                                <!-- Tracking: show STOP in red -->
                                 <DataTrigger Binding="{Binding IsTracking}" Value="True">
                                     <Setter Property="Content" Value="&#9632;  STOP"/>
                                     <Setter Property="Background" Value="#EF1625"/>
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="border" Property="Background" Value="#FF3340"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
+                </Button>
+
+                <!-- Mode toggle: Timer ⏱ / Manual ✎ -->
+                <Button Grid.Column="5" Width="32" Height="32" VerticalAlignment="Center"
+                        Margin="4,0,0,0" Style="{StaticResource IconButton}"
+                        Command="{Binding ToggleModeCommand}"
+                        ToolTip="Switch between timer and manual entry mode">
+                    <Button.Content>
+                        <TextBlock FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="&#9719;"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsManualMode}" Value="True">
+                                            <Setter Property="Text" Value="&#9200;"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Button.Content>
                 </Button>
             </Grid>
 
