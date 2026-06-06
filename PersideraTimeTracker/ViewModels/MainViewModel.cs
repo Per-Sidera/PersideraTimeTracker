@@ -24,17 +24,19 @@ namespace PersideraTimeTracker.ViewModels
 
         public ObservableCollection<TimeEntryGroup> GroupedEntries { get; } = new();
 
-        public ObservableCollection<string> Categories { get; } = new()
-        {
-            "Development", "Design", "Art", "Research", "Marketing",
-            "Meetings", "Admin", "Support"
-        };
+        public ObservableCollection<Project> Projects { get; } = new();
 
         [ObservableProperty]
         private string _newEntryDescription = "";
 
         [ObservableProperty]
-        private string _selectedCategory = "Development";
+        private Project? _selectedProject;
+
+        [ObservableProperty]
+        private string _manualStartTime = "";
+
+        [ObservableProperty]
+        private string _manualEndTime = "";
 
         [ObservableProperty]
         private bool _newEntryBillable = true;
@@ -59,6 +61,12 @@ namespace PersideraTimeTracker.ViewModels
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _entries = _dataService.LoadEntries();
 
+            foreach (var p in _settings.Projects)
+            {
+                Projects.Add(p);
+            }
+            SelectedProject = Projects.FirstOrDefault();
+
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _timer.Tick += (_, _) => UpdateRunningTimer();
 
@@ -71,14 +79,77 @@ namespace PersideraTimeTracker.ViewModels
         [RelayCommand]
         private void AddEntry()
         {
-            if (IsTracking)
+            if (IsTracking) { StopTracking(); return; }
+
+            // Try manual time entry first
+            if (!string.IsNullOrEmpty(ManualStartTime) && !string.IsNullOrEmpty(ManualEndTime))
             {
-                StopTracking();
+                if (TryParseTime(ManualStartTime, out var start) && TryParseTime(ManualEndTime, out var end))
+                {
+                    var today = DateTime.Today;
+                    var entry = new TimeEntry
+                    {
+                        StartTime = today.Add(start),
+                        EndTime = today.Add(end),
+                        Description = string.IsNullOrWhiteSpace(NewEntryDescription) ? "(no description)" : NewEntryDescription.Trim(),
+                        Category = SelectedProject?.Name ?? "",
+                        IsBillable = NewEntryBillable
+                    };
+                    if (entry.Duration > TimeSpan.Zero)
+                    {
+                        _entries.Add(entry);
+                        Persist(); RebuildGroups(); UpdateStatusBar();
+                        NewEntryDescription = "";
+                        ManualStartTime = "";
+                        ManualEndTime = "";
+                        return;
+                    }
+                }
             }
-            else
+            // Fall through to timer
+            StartTracking();
+        }
+
+        private static bool TryParseTime(string input, out TimeSpan result)
+        {
+            result = default;
+            if (DateTime.TryParseExact(input, new[] { "H:mm", "HH:mm", "h:mm tt", "h:mmtt" },
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
             {
-                StartTracking();
+                result = dt.TimeOfDay;
+                return true;
             }
+            return false;
+        }
+
+        [RelayCommand]
+        private void CreateProject()
+        {
+            var dialog = new Views.InputDialog("New Project", "Project name")
+            {
+                Owner = Application.Current.MainWindow
+            };
+            if (dialog.ShowDialog() != true) return;
+
+            var name = dialog.ResponseText?.Trim() ?? "";
+            if (string.IsNullOrWhiteSpace(name)) return;
+
+            // Reuse an existing project with the same name rather than duplicating.
+            var existing = Projects.FirstOrDefault(
+                p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                SelectedProject = existing;
+                return;
+            }
+
+            var colors = new[] { "#4A90D9", "#7B68EE", "#50C878", "#FF6A1F", "#F2DC14", "#EF1625", "#9A9A9A" };
+            var color = colors[Projects.Count % colors.Length];
+            var project = new Project { Name = name, Color = color };
+            Projects.Add(project);
+            _settings.Projects.Add(project);
+            _settings.Save();
+            SelectedProject = project;
         }
 
         private void StartTracking()
@@ -100,7 +171,7 @@ namespace PersideraTimeTracker.ViewModels
                 EndTime = DateTime.Now,
                 Description = string.IsNullOrWhiteSpace(NewEntryDescription)
                     ? "(no description)" : NewEntryDescription.Trim(),
-                Category = SelectedCategory,
+                Category = SelectedProject?.Name ?? "",
                 IsBillable = NewEntryBillable
             };
 
@@ -128,7 +199,9 @@ namespace PersideraTimeTracker.ViewModels
             if (entry == null) return;
             if (IsTracking) StopTracking();
             NewEntryDescription = entry.Description;
-            SelectedCategory = entry.Category;
+            SelectedProject = Projects.FirstOrDefault(
+                p => string.Equals(p.Name, entry.Category, StringComparison.OrdinalIgnoreCase))
+                ?? SelectedProject;
             NewEntryBillable = entry.IsBillable;
             StartTracking();
         }
@@ -137,7 +210,7 @@ namespace PersideraTimeTracker.ViewModels
         private void EditEntry(TimeEntry? entry)
         {
             if (entry == null) return;
-            var win = new Views.EditEntryWindow(entry, Categories)
+            var win = new Views.EditEntryWindow(entry, Projects.Select(p => p.Name))
             {
                 Owner = Application.Current.MainWindow
             };

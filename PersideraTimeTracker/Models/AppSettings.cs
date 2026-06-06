@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -32,6 +33,12 @@ namespace PersideraTimeTracker.Models
 
         /// <summary>Whether credit-card payment is offered on generated invoices.</summary>
         public bool CreditCardEnabled { get; set; } = false;
+
+        /// <summary>User-defined projects that time entries can be assigned to.</summary>
+        public List<Project> Projects { get; set; } = new()
+        {
+            new Project { Name = "General", Color = "#4A90D9" }
+        };
 
         // NOTE: the Mercury API token is intentionally absent here. It is stored
         // securely in Windows Credential Manager (see CredentialManager).

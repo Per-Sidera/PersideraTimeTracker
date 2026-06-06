@@ -1,16 +1,26 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
+using PersideraTimeTracker.Models;
 
 namespace PersideraTimeTracker.Views
 {
     /// <summary>
-    /// Maps a category name to a stable color (deterministic hash) for the
-    /// category dot in each entry row.
+    /// Maps a project name to its configured color. Looks up the matching
+    /// <see cref="Project"/> in <see cref="Settings"/> first; falls back to a
+    /// deterministic hash color when the project is unknown (e.g. legacy
+    /// entries whose category no longer maps to a project).
     /// </summary>
     public class CategoryColorConverter : IValueConverter
     {
+        /// <summary>
+        /// Settings used to resolve project colors. Assigned once at startup so
+        /// the converter (constructed by XAML) can see the live project list.
+        /// </summary>
+        public static AppSettings? Settings { get; set; }
+
         private static readonly Color[] Palette =
         {
             (Color)ColorConverter.ConvertFromString("#FF6A1F"), // ember
@@ -26,6 +36,22 @@ namespace PersideraTimeTracker.Views
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string name = value as string ?? "";
+
+            // Prefer an explicit project color when one is defined.
+            var project = Settings?.Projects?.FirstOrDefault(
+                p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (project != null && !string.IsNullOrWhiteSpace(project.Color))
+            {
+                try
+                {
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString(project.Color));
+                }
+                catch
+                {
+                    // Bad color string — fall through to hash color.
+                }
+            }
+
             int hash = 0;
             foreach (char c in name)
             {

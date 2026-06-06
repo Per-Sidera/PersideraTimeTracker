@@ -16,6 +16,7 @@ public partial class App : Application
         base.OnStartup(e);
 
         var settings = AppSettings.Load();
+        Views.CategoryColorConverter.Settings = settings;
         var mainVm = new MainViewModel(settings);
         var main = new MainWindow { DataContext = mainVm };
 

@@ -50,7 +50,8 @@
             <Grid Margin="16,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="160"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="44"/>
                     <ColumnDefinition Width="140"/>
                 </Grid.ColumnDefinitions>
@@ -73,11 +74,72 @@
                     </TextBlock>
                 </Grid>
 
-                <ComboBox Grid.Column="1" Height="36" VerticalAlignment="Center" Margin="0,0,8,0"
-                          ItemsSource="{Binding Categories}"
-                          SelectedItem="{Binding SelectedCategory}"/>
+                <!-- Manual time range: [09:30] – [17:30] -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"
+                            Margin="0,0,8,0">
+                    <Grid Width="52" Height="36">
+                        <TextBox x:Name="StartBox" Height="36" TextAlignment="Center"
+                                 Text="{Binding ManualStartTime, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="09:30" Foreground="#6A6A6A" FontSize="13"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=StartBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                    <TextBlock Text="&#8211;" Foreground="#6A6A6A" FontSize="14"
+                               VerticalAlignment="Center" Margin="6,0"/>
+                    <Grid Width="52" Height="36">
+                        <TextBox x:Name="EndBox" Height="36" TextAlignment="Center"
+                                 Text="{Binding ManualEndTime, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="17:30" Foreground="#6A6A6A" FontSize="13"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=EndBox}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </StackPanel>
 
-                <ToggleButton Grid.Column="2" Height="36" Width="36" VerticalAlignment="Center"
+                <!-- Project dropdown + new-project button -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"
+                            Margin="0,0,8,0">
+                    <ComboBox Width="140" Height="36"
+                              ItemsSource="{Binding Projects}"
+                              SelectedItem="{Binding SelectedProject}"
+                              DisplayMemberPath="Name">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                             Fill="{Binding Color}"/>
+                                    <TextBlock Text="{Binding Name}" Margin="6,0,0,0" Foreground="#F1F1F1"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="&#65291;" Width="24" Height="36" Margin="2,0,0,0"
+                            Style="{StaticResource IconButton}"
+                            Command="{Binding CreateProjectCommand}" ToolTip="New project"/>
+                </StackPanel>
+
+                <ToggleButton Grid.Column="3" Height="36" Width="36" VerticalAlignment="Center"
                               Margin="0,0,8,0" IsChecked="{Binding NewEntryBillable}"
                               ToolTip="Billable">
                     <ToggleButton.Template>
@@ -101,7 +163,7 @@
                 </ToggleButton>
 
                 <!-- ADD / STOP -->
-                <Button Grid.Column="3" Height="36" VerticalAlignment="Center"
+                <Button Grid.Column="4" Height="36" VerticalAlignment="Center"
                         Command="{Binding AddEntryCommand}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource EmberButton}">
