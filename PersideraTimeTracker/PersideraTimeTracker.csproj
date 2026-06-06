@@ -2,34 +2,19 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyName>PersideraTimeTracker</AssemblyName>
-    <RootNamespace>PersideraTimeTracker</RootNamespace>
-    <ApplicationIcon>Images\clock.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>1.0.0</Version>
-    <Product>Persidera Time Tracker</Product>
-    <Company>Persidera Industries LLC</Company>
-    <Authors>Persidera Industries LLC</Authors>
-    <Description>Persidera Industries internal time tracker with Mercury invoicing.</Description>
-    <!-- We supply our own assembly attributes (AssemblyInfo.cs / license attributes). -->
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- TFM is net9.0-windows; CA1416 platform-compat warnings are false positives here. -->
-    <!-- WFO5001: Application.SetColorMode (dark mode) is an evaluation API we opt into. -->
-    <NoWarn>CA1416;WFO5001</NoWarn>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>PersideraTimeTracker</AssemblyName>
+    <RootNamespace>PersideraTimeTracker</RootNamespace>
+    <Version>2.0.0</Version>
+    <ApplicationIcon>Assets\clock.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="9.0.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Images\clock.ico" />
-    <Content Include="Images\icon-delete.png" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\clock.ico" />
   </ItemGroup>
 </Project>

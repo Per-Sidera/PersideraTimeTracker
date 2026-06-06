@@ -1,0 +1,71 @@
+<Window x:Class="PersideraTimeTracker.Views.EditEntryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit Entry" Height="420" Width="440"
+        WindowStyle="None" AllowsTransparency="False"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="#191919" FontFamily="Segoe UI">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="56"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="#1F1F1F" MouseLeftButtonDown="TitleBar_Drag">
+            <TextBlock Text="EDIT ENTRY" Foreground="#9A9A9A" FontSize="11" FontWeight="SemiBold"
+                       VerticalAlignment="Center" Margin="16,0"/>
+            <Button Content="&#10005;" Style="{StaticResource CloseButton}" Width="44" Height="32"
+                    HorizontalAlignment="Right" Click="Close_Click"/>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="20,16">
+            <TextBlock Text="Description" Style="{StaticResource LabelText}"/>
+            <TextBox x:Name="Description" Margin="0,4,0,14"/>
+
+            <TextBlock Text="Category" Style="{StaticResource LabelText}"/>
+            <ComboBox x:Name="Category" Height="34" Margin="0,4,0,14"/>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <TextBlock Text="Start date" Style="{StaticResource LabelText}"/>
+                    <DatePicker x:Name="StartDate" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                    <TextBlock Text="Start time (HH:mm)" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="StartTime" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                    <TextBlock Text="End date" Style="{StaticResource LabelText}"/>
+                    <DatePicker x:Name="EndDate" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                    <TextBlock Text="End time (HH:mm)" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="EndTime" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <CheckBox x:Name="Billable" Content="Billable"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2" Background="#1F1F1F">
+            <Border BorderBrush="#2A2A2A" BorderThickness="0,1,0,0"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,16,0">
+                <Button Content="Cancel" Padding="16,6" Margin="0,0,8,0" Click="Cancel_Click"/>
+                <Button Content="Save" Padding="20,6" Style="{StaticResource EmberButton}" Click="Save_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
